@@ -1,0 +1,8 @@
+# Get Terraform Verion
+terraform version
+# DownloadInstall PlugIns for Providers
+terraform init
+# Plan
+terraform plan
+# Execute - Apply Plan - type yes to confirm
+terraform apply
