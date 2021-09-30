@@ -91,7 +91,7 @@ resource "vcd_vm_internal_disk" "vm2_disk1" {
   vm_name = vcd_vapp_vm.vm2.name
   bus_type = "paravirtual"
   size_in_mb = "5120"
-  bus_number = 1
+  bus_number = 0
   unit_number = 1
 }
 
@@ -100,7 +100,7 @@ resource "vcd_vm_internal_disk" "vm2_disk2" {
   vm_name = vcd_vapp_vm.vm2.name
   bus_type = "paravirtual"
   size_in_mb = "5120"
-  bus_number = 1
+  bus_number = 0
   unit_number = 2
   depends_on = [ vcd_vm_internal_disk.vm2_disk1 ]
 }
