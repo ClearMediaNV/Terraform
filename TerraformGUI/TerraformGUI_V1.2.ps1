@@ -108,7 +108,7 @@ Start-Sleep -Seconds 2
 mkdir X:\Terraform
 choco install terraform --version=0.13.5 -force -y | Out-Null
 Move-Item -Path C:\ProgramData\chocolatey\lib\terraform\tools\terraform.exe -Destination X:\Terraform\ | Out-Null
-Invoke-WebRequest -Uri https://github.com/cedriccarette/terraform/archive/refs/heads/main.zip -Outfile X:\Terraform\main.zip | Out-Null
+Invoke-WebRequest -Uri "https://github.com/ClearMediaNV/Terraform/archive/main.zip" -Outfile X:\Terraform\main.zip | Out-Null
 Expand-Archive -LiteralPath x:\Terraform\main.zip -DestinationPath X:\Terraform\ | Out-Null
 Move-Item -Path X:\Terraform\terraform-main\* -Destination X:\Terraform\ | Out-Null
 Remove-Item -Path X:\Terraform\terraform-main -Recurse | Out-Null
