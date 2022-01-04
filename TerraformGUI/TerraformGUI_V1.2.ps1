@@ -1,6 +1,9 @@
 #Load Assembly and Library
 Add-Type -AssemblyName PresentationFramework
 
+#Check if PowerCLI module exists
+Install-Module -Name VMware.VimAutomation.Cloud -RequiredVersion '12.0.0.15940183' -Force
+
 #Load Vcloud module
 Import-Module -Name VMware.VimAutomation.Cloud
 
@@ -15,15 +18,16 @@ Import-Module -Name VMware.VimAutomation.Cloud
         <GroupBox Name="Header" Header="First step:" Margin="10,12,604,665"/>
         <Button Name="BTNdwnTerraform" Content="Download Terraform" HorizontalAlignment="Left" Margin="16,35,0,0" VerticalAlignment="Top" Width="157" Height="20"/>
         
-        <Label Name="Optional" Content="Optional:" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top" Height="24"/>
-        <Label Name="AddPrefix" Content="Add a VM prefix:" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Height="24"/>
+        <Label Name="Optional" Content="" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top" Height="24"/>
+        <Label Name="AddPrefix" Content="Add a VM prefix: (Optional:)" HorizontalAlignment="Left" Margin="10,100,0,0" VerticalAlignment="Top" Height="24"/>
         <TextBox Name="prefix" HorizontalAlignment="Left" Margin="12,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         <Label Name="lblWinver" Content="Select Windows version:" HorizontalAlignment="Left" Margin="10,150,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="Winver" HorizontalAlignment="Left" Margin="12,175,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0"/>
+        <ComboBox Name="Winver" HorizontalAlignment="Left" Margin="12,175,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="2"/>
         
         <Label Name="lblOrgname" Content="Enter Org name:" HorizontalAlignment="Left" Margin="216,25,0,0" VerticalAlignment="Top"/>
         <TextBox Name="txtOrgname" HorizontalAlignment="Left" Margin="221,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="18"/>
         <Button Name="BTNlogin" Content="Login" HorizontalAlignment="Left" Margin="379,50,0,0" VerticalAlignment="Top" Width="96"/>
+
         <Label Name="lblVappName" Content="Enter new vApp name:" HorizontalAlignment="Left" Margin="216,75,0,0" VerticalAlignment="Top" Height="24"/>
         <TextBox Name="txtVappName" HorizontalAlignment="Left" Margin="221,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
         
@@ -32,7 +36,9 @@ Import-Module -Name VMware.VimAutomation.Cloud
         
         <Label Name="lblVDC" Content="Select vDC:" HorizontalAlignment="Left" Margin="216,175,0,0" VerticalAlignment="Top"/>
         <ComboBox Name="cmbVDC" HorizontalAlignment="Left" Margin="221,200,0,0" VerticalAlignment="Top" Width="120"/>
+
         <Button Name="BTNok" Content="Check Info" HorizontalAlignment="Left" Margin="221,230,0,0" VerticalAlignment="Top" Width="120"/>
+
         <TextBlock Name="textblock" HorizontalAlignment="Left" Margin="523,29,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="241" Width="243" FontSize="20"><Run Text="Before "/><Run Language="nl-be" Text="providing the needed information"/><LineBreak/><Run Language="nl-be" Text="make sure you have logged in to the vCloud Director to verify the information!!."/><LineBreak/><Run Language="nl-be"/><LineBreak/><Run Language="nl-be"/></TextBlock>
         
         <Button Name="BTNdeploy" Content="DEPLOY !" HorizontalAlignment="Left" Margin="523,230,0,0" Background="#FF31E614" VerticalAlignment="Top" Width="96"/>
@@ -40,6 +46,7 @@ Import-Module -Name VMware.VimAutomation.Cloud
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="2,250,0,0" Height="380" Width="780"  HorizontalScrollBarVisibility="Disabled">
         <TextBox Name="txtOutput" Text="{Binding Text, Mode=OneWay}" TextWrapping="Wrap" IsReadOnly="True" AcceptsReturn="True" Background="#FF0800AE" Foreground="#FFF5EA04"/>
         </ScrollViewer>
+
         <ProgressBar Name="ProgressBar" HorizontalAlignment="Center" Height="19" Margin="0,707,0,0" VerticalAlignment="Top" Width="780"/>
     </Grid>
 </Window>
@@ -89,37 +96,25 @@ exit
 }
 
 $Output.Text = "Dear $env:UserName,
+
 Thank you for choosing the Terraform GUI created by ClearMedia NV.
 Before you can deploy a new environment, you need to create the user 'terraform' in your Bizzcloud portal which you will need in a later stage.
 If this is done, you can proceed and click the button 'Download Terraform'.
+
 If you have any questions, please contact support@clearmedia.be"
 
 #Button functions:
 $DwnTerraform.add_click({
-$Folder = 'C:\ProgramData\chocolatey'
-if (Test-Path -Path $Folder) {
-     $Output.Text = "Chocolaty already installed"
-} else {
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
-}
-choco install imdisk-toolkit -y 
-imdisk -a -s 512M -m X: -p "/fs:ntfs /v:RAMDISK /q /c /y" 
-Start-Sleep -Seconds 2
-mkdir X:\Terraform
-choco install terraform --version=0.13.5 -force -y | Out-Null
-Move-Item -Path C:\ProgramData\chocolatey\lib\terraform\tools\terraform.exe -Destination X:\Terraform\ | Out-Null
-Invoke-WebRequest -Uri "https://github.com/ClearMediaNV/Terraform/archive/main.zip" -Outfile X:\Terraform\main.zip | Out-Null
-Expand-Archive -LiteralPath x:\Terraform\main.zip -DestinationPath X:\Terraform\ | Out-Null
-Move-Item -Path X:\Terraform\terraform-main\* -Destination X:\Terraform\ | Out-Null
-Remove-Item -Path X:\Terraform\terraform-main -Recurse | Out-Null
-Remove-Item -Path X:\Terraform\main.zip -Recurse | Out-Null
-Start-Sleep -Seconds 2
-Push-Location x:\Terraform | Out-Null
-$Log = 'C:\Windows\Logs\Terraform_log'
-if (Test-Path -Path $Log) { 
-} else {
-    New-Item -path "C:\Windows\Logs\" -Name "Terraform_log" -ItemType "directory"
-}
+Invoke-Expression ( New-Object System.Net.WebClient ).DownloadString( 'https://chocolatey.org/install.ps1' ) | Out-Null
+Invoke-Expression -Command '& choco install imdisk-toolkit -y ' | Out-Null
+Invoke-Expression -Command '& imdisk -a -s 512M -m X: -p "/fs:ntfs /v:RAMDISK /q /c /y" '
+Invoke-Expression -Command '& choco install terraform --version=0.13.5 -force -y' | Out-Null
+Push-Location x:\ | Out-Null
+copy-Item -Path C:\ProgramData\chocolatey\bin\terraform.exe
+Invoke-WebRequest -Uri https://github.com/cedriccarette/terraform/archive/refs/heads/main.zip -Outfile main.zip | Out-Null
+Expand-Archive -LiteralPath main.zip 
+Move-Item -Path X:\main\terraform-main\* -Destination X:\
+New-Item -path "C:\Windows\Logs\" -Name "Terraform" -ItemType "directory" -Force
 $progress.Value = 25
 $Output.Text = "Terraform is ready to use... `nFill in the needed information."
 $login.IsEnabled = $true
@@ -191,7 +186,7 @@ $Orgname.IsReadOnly = $true
 #Compile variable file
 $OutputOrg = $Orgname.Text
 $Outputvapp = $vapp.Text
-$checkvapp = Get-PIVApp
+$checkvapp = (Get-PIVApp).Name
 ForEach($vapps in $checkvapp)
 {
     if($Outputvapp -eq $vapps){
