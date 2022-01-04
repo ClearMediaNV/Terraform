@@ -126,9 +126,9 @@ $login.add_click({
 $progress.Value = 0
 $OutputOrg = $Orgname.Text
 $cred = Get-Credential
-$cred.UserName | Out-File X:\Terraform\cred.txt
-$cred.GetNetworkCredential().Password | Add-Content X:\Terraform\cred.txt
-(Get-Item –Path X:\Terraform\cred.txt).Encrypt()
+$cred.UserName | Out-File X:\cred.txt
+$cred.GetNetworkCredential().Password | Add-Content X:\cred.txt
+(Get-Item –Path X:\cred.txt).Encrypt()
 if (([string]::IsNullOrEmpty($OutputOrg)))
 {
         $Output.Text = "Org name can't be empty"
@@ -194,15 +194,15 @@ ForEach($vapps in $checkvapp)
         Return
     }    
 }
-(Get-Item –Path X:\Terraform\cred.txt).Decrypt()
-$OutputTusr = (Get-Content -Path X:\Terraform\cred.txt)[0]
-$OutputTpwd = (Get-Content -Path X:\Terraform\cred.txt)[-1]
+(Get-Item –Path X:\cred.txt).Decrypt()
+$OutputTusr = (Get-Content -Path X:\cred.txt)[0]
+$OutputTpwd = (Get-Content -Path X:\cred.txt)[-1]
 $OutputVDC = $vdc.Text
 $OutputNet = $network.Text
 $OutputPrefix = $prefix.Text
 $OutputWinver = $winver.Text
-$original_file = 'X:\Terraform\Dummy.txt'
-$destination_file =  'X:\Terraform\variables.tf'
+$original_file = 'X:\Dummy.txt'
+$destination_file =  'X:\variables.tf'
 (Get-Content $original_file) | Foreach-Object {
     $_ -replace 'obj1', $OutputOrg `
        -replace 'obj2', $OutputTusr `
@@ -215,22 +215,22 @@ $destination_file =  'X:\Terraform\variables.tf'
     } | Set-Content $destination_file
 $progress.Value = 40
 Invoke-Expression -command "& .\terraform.exe version" | Out-File version.txt
-Copy-Item "X:\Terraform\version.txt" "C:\Windows\Logs\terraform_log\versionCheck$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
+Copy-Item "X:\version.txt" "C:\Windows\Logs\terraform\versionCheck$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
 Invoke-Expression -command "& .\terraform.exe init" 
 $progress.Value = 50      
-Remove-Item -Path X:\Terraform\cred.txt -Recurse | Out-Null
-Invoke-Expression -Command "& .\terraform.exe plan -out=X:\Terraform\output.plan -no-color" | Out-File plan.txt
-Copy-Item "X:\Terraform\plan.txt" "C:\Windows\Logs\terraform_log\plan$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
-$Output.Text = Get-Content -Raw -LiteralPath X:\Terraform\plan.txt
+Remove-Item -Path X:\cred.txt -Recurse | Out-Null
+Invoke-Expression -Command "& .\terraform.exe plan -out=X:\output.plan -no-color" | Out-File plan.txt
+Copy-Item "X:\plan.txt" "C:\Windows\Logs\terraform\plan$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
+$Output.Text = Get-Content -Raw -LiteralPath X:\plan.txt
 $deploy.IsEnabled = $true
 $okButton.IsEnabled = $false
 $progress.Value = 75
 })
 
 $deploy.add_Click({
-Invoke-Expression -Command "& .\terraform.exe apply X:\\Terraform\\output.plan" | Out-File apply.txt
-Copy-Item "X:\Terraform\apply.txt" "C:\Windows\Logs\terraform_log\apply$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
-$Output.Text = Get-Content -Raw -LiteralPath X:\Terraform\apply.txt | select -Last 10
+Invoke-Expression -Command "& .\terraform.exe apply X:\\output.plan" | Out-File apply.txt
+Copy-Item "X:\apply.txt" "C:\Windows\Logs\terraform\apply$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
+$Output.Text = Get-Content -Raw -LiteralPath X:\apply.txt | select -Last 10
 $progress.Value = 100
 $deploy.IsVisible = $false
 })
