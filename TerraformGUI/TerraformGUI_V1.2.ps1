@@ -2,7 +2,12 @@
 Add-Type -AssemblyName PresentationFramework
 
 #Check if PowerCLI module exists
-Install-Module -Name VMware.VimAutomation.Cloud -RequiredVersion '12.0.0.15940183' -Force
+if (Get-Module -ListAvailable -Name VMware.PowerCLI) {
+    Write-Host "Module exists"
+} 
+else {
+    Install-Module -Name VMware.PowerCLI
+}
 
 #Load Vcloud module
 Import-Module -Name VMware.VimAutomation.Cloud
@@ -105,16 +110,31 @@ If you have any questions, please contact support@clearmedia.be"
 
 #Button functions:
 $DwnTerraform.add_click({
-Invoke-Expression ( New-Object System.Net.WebClient ).DownloadString( 'https://chocolatey.org/install.ps1' ) | Out-Null
-Invoke-Expression -Command '& choco install imdisk-toolkit -y ' | Out-Null
-Invoke-Expression -Command '& imdisk -a -s 512M -m X: -p "/fs:ntfs /v:RAMDISK /q /c /y" '
-Invoke-Expression -Command '& choco install terraform --version=0.13.5 -force -y' | Out-Null
-Push-Location x:\ | Out-Null
-copy-Item -Path C:\ProgramData\chocolatey\bin\terraform.exe
-Invoke-WebRequest -Uri https://github.com/cedriccarette/terraform/archive/refs/heads/main.zip -Outfile main.zip | Out-Null
-Expand-Archive -LiteralPath main.zip 
-Move-Item -Path X:\main\terraform-main\* -Destination X:\
-New-Item -path "C:\Windows\Logs\" -Name "Terraform" -ItemType "directory" -Force
+$Folder = 'C:\ProgramData\chocolatey'
+if (Test-Path -Path $Folder) {
+     $Output.Text = "Chocolaty already installed"
+} else {
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')) 
+}
+choco install imdisk-toolkit -y 
+imdisk -a -s 512M -m X: -p "/fs:ntfs /v:RAMDISK /q /c /y" 
+Start-Sleep -Seconds 2
+mkdir X:\Terraform
+Push-Location x:\Terraform | Out-Null
+choco install terraform --version=0.13.5 -force -y | Out-Null
+Move-Item -Path C:\ProgramData\chocolatey\lib\terraform\tools\terraform.exe -Destination X:\Terraform\ | Out-Null
+Invoke-WebRequest -Uri https://github.com/cedriccarette/terraform/archive/refs/heads/main.zip -Outfile X:\Terraform\main.zip | Out-Null
+Expand-Archive -LiteralPath x:\Terraform\main.zip -DestinationPath X:\Terraform\ | Out-Null
+Move-Item -Path X:\Terraform\terraform-main\* -Destination X:\Terraform\ | Out-Null
+Remove-Item -Path X:\Terraform\terraform-main -Recurse | Out-Null
+Remove-Item -Path X:\Terraform\main.zip -Recurse | Out-Null
+Start-Sleep -Seconds 2
+
+$Log = 'C:\Windows\Logs\Terraform_log'
+if (Test-Path -Path $Log) { 
+} else {
+    New-Item -path "C:\Windows\Logs\" -Name "Terraform_log" -ItemType "directory"
+}
 $progress.Value = 25
 $Output.Text = "Terraform is ready to use... `nFill in the needed information."
 $login.IsEnabled = $true
@@ -126,9 +146,9 @@ $login.add_click({
 $progress.Value = 0
 $OutputOrg = $Orgname.Text
 $cred = Get-Credential
-$cred.UserName | Out-File X:\cred.txt
-$cred.GetNetworkCredential().Password | Add-Content X:\cred.txt
-(Get-Item –Path X:\cred.txt).Encrypt()
+$cred.UserName | Out-File X:\Terraform\cred.txt
+$cred.GetNetworkCredential().Password | Add-Content X:\Terraform\cred.txt
+(Get-Item –Path X:\Terraform\cred.txt).Encrypt()
 if (([string]::IsNullOrEmpty($OutputOrg)))
 {
         $Output.Text = "Org name can't be empty"
@@ -194,15 +214,15 @@ ForEach($vapps in $checkvapp)
         Return
     }    
 }
-(Get-Item –Path X:\cred.txt).Decrypt()
-$OutputTusr = (Get-Content -Path X:\cred.txt)[0]
-$OutputTpwd = (Get-Content -Path X:\cred.txt)[-1]
+(Get-Item –Path X:\Terraform\cred.txt).Decrypt()
+$OutputTusr = (Get-Content -Path X:\Terraform\cred.txt)[0]
+$OutputTpwd = (Get-Content -Path X:\Terraform\cred.txt)[-1]
 $OutputVDC = $vdc.Text
 $OutputNet = $network.Text
 $OutputPrefix = $prefix.Text
 $OutputWinver = $winver.Text
-$original_file = 'X:\Dummy.txt'
-$destination_file =  'X:\variables.tf'
+$original_file = 'X:\Terraform\Dummy.txt'
+$destination_file =  'X:\Terraform\variables.tf'
 (Get-Content $original_file) | Foreach-Object {
     $_ -replace 'obj1', $OutputOrg `
        -replace 'obj2', $OutputTusr `
@@ -215,24 +235,24 @@ $destination_file =  'X:\variables.tf'
     } | Set-Content $destination_file
 $progress.Value = 40
 Invoke-Expression -command "& .\terraform.exe version" | Out-File version.txt
-Copy-Item "X:\version.txt" "C:\Windows\Logs\terraform\versionCheck$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
+Copy-Item "X:\Terraform\version.txt" "C:\Windows\Logs\terraform_log\versionCheck$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
 Invoke-Expression -command "& .\terraform.exe init" 
 $progress.Value = 50      
-Remove-Item -Path X:\cred.txt -Recurse | Out-Null
-Invoke-Expression -Command "& .\terraform.exe plan -out=X:\output.plan -no-color" | Out-File plan.txt
-Copy-Item "X:\plan.txt" "C:\Windows\Logs\terraform\plan$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
-$Output.Text = Get-Content -Raw -LiteralPath X:\plan.txt
+Remove-Item -Path X:\Terraform\cred.txt -Recurse | Out-Null
+Invoke-Expression -Command "& .\terraform.exe plan -out=X:\Terraform\output.plan -no-color" | Out-File plan.txt
+Copy-Item "X:\Terraform\plan.txt" "C:\Windows\Logs\terraform_log\plan$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
+$Output.Text = Get-Content -Raw -LiteralPath X:\Terraform\plan.txt
 $deploy.IsEnabled = $true
 $okButton.IsEnabled = $false
 $progress.Value = 75
 })
 
 $deploy.add_Click({
-Invoke-Expression -Command "& .\terraform.exe apply X:\\output.plan" | Out-File apply.txt
-Copy-Item "X:\apply.txt" "C:\Windows\Logs\terraform\apply$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
-$Output.Text = Get-Content -Raw -LiteralPath X:\apply.txt | select -Last 10
+Invoke-Expression -Command "& .\terraform.exe apply X:\\Terraform\\output.plan" | Out-File apply.txt
+Copy-Item "X:\Terraform\apply.txt" "C:\Windows\Logs\terraform_log\apply$(get-date -uformat %d-%m-%Y-%H.%M.%S).txt"
+$Output.Text = Get-Content -Raw -LiteralPath X:\Terraform\apply.txt | select -Last 10
 $progress.Value = 100
-$deploy.IsVisible = $false
+$deploy.IsEnabled = $false
 })
 
 #Show XMLform
