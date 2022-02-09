@@ -11,22 +11,22 @@ terraform {
 
 # Provider Block
 provider "vcd" {
-  user = var.UserName
-  password = var.UserPassword
+  user = var.user_name
+  password = var.user_password
   auth_type = "integrated"
-  org = var.OrgName
-  vdc = var.VdcName 
+  org = var.org_name
+  vdc = var.vdc_name 
   url = "https://my.bizzcloud.be/api"
 }
 
 # Resource Blocks
-resource "vcd_vapp" "vApp" {
-  name = var.vAppName
+resource "vcd_vapp" "vapp" {
+  name = var.vapp_name
 }
 
-resource "vcd_vapp_network" "vAppNet" {
-  vapp_name = vcd_vapp.vApp.name
-  name  = var.vAppNetworkName
+resource "vcd_vapp_network" "vapp_net" {
+  vapp_name = vcd_vapp.vapp.name
+  name  = var.vapp_network_name
   gateway = "192.168.13.1"
   netmask = "255.255.255.0"
   dns1 = "195.238.2.21"
@@ -37,15 +37,15 @@ resource "vcd_vapp_network" "vAppNet" {
   }
 }
 
-resource "vcd_vapp_org_network" "vAppOrgNet" {
-  vapp_name = vcd_vapp.vApp.name
-  org_network_name  = var.VdcNetworkName
+resource "vcd_vapp_org_network" "vapp_org_net" {
+  vapp_name = vcd_vapp.vapp.name
+  org_network_name  = var.vdc_network_name
 }
 
 resource "vcd_vapp_vm" "vm1" {
-  vapp_name = vcd_vapp.vApp.name
-  name = var.vm1Name
-  computer_name = var.vm1Name
+  vapp_name = vcd_vapp.vapp.name
+  name = var.vm1_name
+  computer_name = var.vm1_name
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
@@ -55,7 +55,7 @@ resource "vcd_vapp_vm" "vm1" {
   cpus = 1
   cpu_cores = 1
   network {
-    name = vcd_vapp_network.vAppNet.name
+    name = vcd_vapp_network.vapp_net.name
     type = "vapp"
     ip_allocation_mode = "MANUAL"
     ip = "192.168.13.100"
@@ -65,9 +65,9 @@ resource "vcd_vapp_vm" "vm1" {
 }
 
 resource "vcd_vapp_vm" "vm2" {
-  vapp_name = vcd_vapp.vApp.name
-  name = var.vm2Name
-  computer_name = var.vm2Name
+  vapp_name = vcd_vapp.vapp.name
+  name = var.vm2_name
+  computer_name = var.vm2_name
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
@@ -77,7 +77,7 @@ resource "vcd_vapp_vm" "vm2" {
   cpus = 2
   cpu_cores = 1
   network {
-    name = vcd_vapp_network.vAppNet.name
+    name = vcd_vapp_network.vapp_net.name
     type = "vapp"
     ip_allocation_mode = "MANUAL"
     ip = "192.168.13.101"
@@ -87,7 +87,7 @@ resource "vcd_vapp_vm" "vm2" {
 }
 
 resource "vcd_vm_internal_disk" "vm2_disk1" {
-  vapp_name = vcd_vapp.vApp.name
+  vapp_name = vcd_vapp.vapp.name
   vm_name = vcd_vapp_vm.vm2.name
   bus_type = "paravirtual"
   size_in_mb = "5120"
@@ -96,7 +96,7 @@ resource "vcd_vm_internal_disk" "vm2_disk1" {
 }
 
 resource "vcd_vm_internal_disk" "vm2_disk2" {
-  vapp_name = vcd_vapp.vApp.name
+  vapp_name = vcd_vapp.vapp.name
   vm_name = vcd_vapp_vm.vm2.name
   bus_type = "paravirtual"
   size_in_mb = "5120"
@@ -106,9 +106,9 @@ resource "vcd_vm_internal_disk" "vm2_disk2" {
 }
 
 resource "vcd_vapp_vm" "vm3" {
-  vapp_name = vcd_vapp.vApp.name
-  name = var.vm3Name
-  computer_name = var.vm3Name
+  vapp_name = vcd_vapp.vapp.name
+  name = var.vm3_name
+  computer_name = var.vm3_name
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
@@ -118,14 +118,14 @@ resource "vcd_vapp_vm" "vm3" {
   cpus = 1
   cpu_cores = 1
   network {
-    name = var.VdcNetworkName
+    name = var.vdc_network_name
     type = "org"
     ip_allocation_mode = "POOL"
     adapter_type = "VMXNET3"
     is_primary = true
   }
   network {
-    name = vcd_vapp_network.vAppNet.name
+    name = vcd_vapp_network.vapp_net.name
     type = "vapp"
     ip_allocation_mode = "MANUAL"
     ip = "192.168.13.254"
