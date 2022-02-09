@@ -1,40 +1,40 @@
-variable "OrgName"	{
+variable "org_name"	{
 	type = string
 	default = "Cleartoso"
 	}
-variable "UserName" {
+variable "user_name" {
 	type = string
 	default = "terraform"
 	}
-variable "UserPassword" {
+variable "user_password" {
 	type = string
 	default = "????????????????????????"
 	}
-variable "VdcName" {
+variable "vdc_name" {
 	type = string
 	default = "vDC-Cleartoso-Machelen"
 	}
-variable "VdcNetworkName" {
+variable "vdc_network_name" {
 	type = string
 	default = "orgnet-Direct-Cleartoso"
 	}
-variable "vAppName" {
+variable "vapp_name" {
 	type = string
 	default = "vApp-xyz"
 	}
-variable "vAppNetworkName" {
+variable "vapp_network_name" {
 	type = string
 	default = "vAppNet-xyz"
 	}
-variable "vm1Name" {
+variable "vm1_name" {
 	type = string
 	default = "DC"
 	}
-variable "vm2Name" {
+variable "vm2_name" {
 	type = string
 	default = "RDS"
 	}
-variable "vm3Name" {
+variable "vm3_name" {
 	type = string
 	default = "FireboxV"
 	}
