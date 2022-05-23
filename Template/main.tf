@@ -50,7 +50,7 @@ resource "vcd_vapp_vm" "vm1" {
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
   catalog_name = "Public_Catalog"
-  template_name = var.TemplateWindows2019
+  template_name = var.template_windows_name
   memory = 4096
   cpus = 1
   cpu_cores = 1
@@ -72,7 +72,7 @@ resource "vcd_vapp_vm" "vm2" {
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
   catalog_name  = "Public_Catalog"
-  template_name = var.TemplateWindows2019
+  template_name = var.template_windows_name
   memory = 6144
   cpus = 2
   cpu_cores = 1
@@ -113,7 +113,7 @@ resource "vcd_vapp_vm" "vm3" {
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
   catalog_name = "Public_Catalog"
-  template_name = var.TemplateFireboxV
+  template_name = var.template_watchguard_name
   memory = 1024
   cpus = 1
   cpu_cores = 1
