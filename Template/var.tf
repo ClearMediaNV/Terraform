@@ -1,4 +1,4 @@
-variable "org_name"	{
+variable "org_name" {
 	type = string
 	default = "Cleartoso"
 	}
