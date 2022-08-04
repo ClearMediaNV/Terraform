@@ -44,5 +44,5 @@ variable "template_windows_name" {
 	}
 variable "template_watchguard_name" {
 	type = string
-	default = "FireboxV v12.5.4 Template "
+	default = "FireboxV v12.5.4 Template"
 	}
