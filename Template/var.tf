@@ -40,9 +40,9 @@ variable "vm3_name" {
 	}
 variable "template_windows_name" {
 	type = string
-	default = "Win2019 Template"
+	default = "Win2022Template"
 	}
 variable "template_watchguard_name" {
 	type = string
-	default = "FireboxV v12.5.4 Template"
+	default = "FireboxVTemplate"
 	}
