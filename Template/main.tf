@@ -49,7 +49,7 @@ resource "vcd_vapp_vm" "vm1" {
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
-  catalog_name = "Public_Catalog"
+  catalog_name = var.catalog_windows_name
   template_name = var.template_windows_name
   memory = 4096
   cpus = 1
@@ -71,7 +71,7 @@ resource "vcd_vapp_vm" "vm2" {
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
-  catalog_name  = "Public_Catalog"
+  catalog_name  = var.catalog_windows_name
   template_name = var.template_windows_name
   memory = 6144
   cpus = 2
@@ -112,7 +112,7 @@ resource "vcd_vapp_vm" "vm3" {
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
-  catalog_name = "Public_Catalog"
+  catalog_name = var.catalog_watchguard_name
   template_name = var.template_watchguard_name
   memory = 1024
   cpus = 1
