@@ -38,9 +38,17 @@ variable "vm3_name" {
 	type = string
 	default = "FireboxV"
 	}
+variable "catalog_windows_name" {
+	type = string
+	default = "Public_Catalog"
+	}
 variable "template_windows_name" {
 	type = string
 	default = "Win2022Template"
+	}
+variable "catalog_watchguard_name" {
+	type = string
+	default = "Public_Catalog"
 	}
 variable "template_watchguard_name" {
 	type = string
