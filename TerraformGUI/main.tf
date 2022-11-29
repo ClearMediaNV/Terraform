@@ -134,4 +134,52 @@ resource "vcd_vapp_vm" "vm3" {
     adapter_type = "VMXNET3"
     is_primary = false
   }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
 }
