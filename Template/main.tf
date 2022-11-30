@@ -1,10 +1,8 @@
 # Terraform Block
 terraform {
-  required_version = "0.13.5"
   required_providers {
     vcd = {
       source = "vmware/vcd"
-      version = "3.6.0"
     }
   }
 }
@@ -132,4 +130,60 @@ resource "vcd_vapp_vm" "vm3" {
     adapter_type = "VMXNET3"
     is_primary = false
   }
+  network {
+    name = vcd_vapp_network.vAppNet.name
+    type = "vapp"
+    ip_allocation_mode = "MANUAL"
+    ip = "192.168.13.254"
+    adapter_type = "VMXNET3"
+    is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }
+  network {
+    type = "none"
+	ip_allocation_mode = "NONE"
+	adapter_type = "VMXNET3"
+	is_primary = false
+  }  
 }
