@@ -146,7 +146,7 @@ Function Login {
             } 
             Else {
 		        $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install VCloud Module`n") } )
-                $Job = Start-Job -Name 'Install VCloud' -ScriptBlock { Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force }
+                $Job = Start-Job -Name 'Install VCloud' -ScriptBlock { Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force -AllowClobber }
                 While ( $job.State -eq 'Running' ) { Start-Sleep -Milliseconds 1500 }
                 }
         $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Import VCloud Module`n") } )
