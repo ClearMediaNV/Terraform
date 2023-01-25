@@ -119,7 +119,7 @@ $SyncHash.Window=[Windows.Markup.XamlReader]::Load( [System.Xml.XmlNodeReader]::
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { $SyncHash.Add($_.Name, $SyncHash.Window.Findname($PsItem.Name)) }
 
 # Init welcome messages
-$SyncHash.TextBoxOutput.Text = "`n Dear $env:UserName,`nThank you for choosing the Terraform GUI created by ClearMedia NV."
+$SyncHash.TextBoxOutput.Text = "`n Dear $env:UserName,`n Thank you for choosing the Terraform GUI created by ClearMedia NV."
 $SyncHash.TextBlock.Text = "Please Login in BizzCloud`nEnter Org Name and Credentials`n`nPush the Login Button"
 
 # Init ( WPF - Windows Presentation Framework ) Functions
