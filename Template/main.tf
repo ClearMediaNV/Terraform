@@ -17,6 +17,11 @@ provider "vcd" {
   url = "https://my.bizzcloud.be/api"
 }
 
+# Data Block
+data "vcd_org" "org" {
+  name = var.org_name
+}
+
 # Resource Blocks
 resource "vcd_vapp" "vapp" {
   name = var.vapp_name
