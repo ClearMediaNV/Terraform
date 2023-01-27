@@ -1,12 +1,3 @@
-# Run As Admin Check
-If ( -Not ( [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent() ).IsInRole( [Security.Principal.WindowsBuiltInRole]::Administrator ) ) {
-    [System.Windows.Forms.MessageBox]::Show(' Please Run Script As ADMINISTRATOR','WARNING')
-    Return
-    }
-
-# Set Full Screen WXGA 1280 x 800
-Set-DisplayResolution -Width 1280 -Height 800 -Force
-
 # Load Assembly ( WPF - Windows Presentation Framework )
 Add-Type -AssemblyName PresentationFramework
 
@@ -133,62 +124,42 @@ Function Login {
 	$Runspace.SessionStateProxy.SetVariable("Password",$SyncHash.PasswordBoxPassword.SecurePassword )
     [ScriptBlock]$Code = {
         # Deploy VmWare VCloud Module
-		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText("`n Deploy VmWare VCloud Module`n") } )
         Try { Get-PackageProvider -Name 'NuGet' }
             Catch {
                 # Install Extra PackageProvider - Module
 		        $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install NuGet `n") } )
-                $Job = Start-Job -Name 'NuGet' -ScriptBlock { Install-PackageProvider -Name 'NuGet' -Force }
-                While ( $job.State -eq 'Running' ) { Start-Sleep -Milliseconds 1500 }
+                Install-PackageProvider -Name 'NuGet' -Force
                 }
         If ( ( Get-Module -Name VMware.VimAutomation.Cloud -ListAvailable ).Version.Major -ge 13 ) {
             $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" VCloud Module allready Installed `n") } )
             } 
             Else {
 		        $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install VCloud Module`n") } )
-                $Job = Start-Job -Name 'Install VCloud' -ScriptBlock { Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force -AllowClobber }
-                While ( $job.State -eq 'Running' ) { Start-Sleep -Milliseconds 1500 }
+                $Error.Clear()
+                Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force -AllowClobber
+                If ( $Error ) {
+			        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Error Installing PowerShell Module VCloud." } )
+			        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.IsEnabled = $True } )
+			        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.Visibility = "Visible"  } )
+                    Return
+                    }
                 }
         $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Import VCloud Module`n") } )
-        $Job = Start-Job -Name 'Import VCloud' -ScriptBlock { Import-Module -Name VMware.VimAutomation.Cloud  -MinimumVersion 13.0.0.0 -Scope Local -Force }
-        While ( $job.State -eq 'Running' ) { Start-Sleep -Milliseconds 1500 }
-        If ( $Job.ChildJobs[0].Error ) {
- 	        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.Progress.Visibility = "Hidden" } )
+        $Error.Clear()
+        Import-Module -Name VMware.VimAutomation.Cloud  -MinimumVersion 13.0.0.0 -Scope Local -Force
+        If ( $Error ) {
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Error Importing PowerShell Module VCloud." } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.IsEnabled = $True } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.Visibility = "Visible"  } )
             Return
-            }
-        
-        # Deploy Terraform
-		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText("`n Deploy Terraform`n") } )
-        Try { Invoke-Expression -Command '& C:\ProgramData\chocolatey\choco' }
-            Catch {
-                $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install Choco`n") } )
-                $Job = Start-Job -Name 'InstallChoco' -ScriptBlock { [System.Net.ServicePointManager]::SecurityProtocol = 'Tls12' ; Invoke-Expression ( New-Object System.Net.WebClient ).DownloadString( 'https://chocolatey.org/install.ps1' ) }
-                While ( $job.State -eq 'Running' ) { Start-Sleep -Milliseconds 1500 }
-                }
-        If ( ( & terraform version ) ) {
-            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" $( ( & terraform version ).Split( [CHAR]10 )[0] ) allready Installed`n") } )
-            }
-            Else {
-            $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.TextBoxOutput.AddText(" Install Terraform`n") } )
-            $Job = Start-Job -Name 'InstallTerraform' -ScriptBlock { Invoke-Expression -Command '& C:\ProgramData\chocolatey\choco install terraform -y -f' }
-            While ( $job.State -eq 'Running' ) { Start-Sleep -Milliseconds 1500 }
-		    $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" $( ( & terraform version ).Split( [CHAR]10 )[0] ) Installed `n") } )
-            }
-
+            }        
         # Connect BizzCloud
         $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.TextBoxOutput.AddText("`n Connect to BizzCloud`n") } )
         $Credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ( $UserName , $Password )
         $Error.Clear()
-        Import-Module -Name VMware.VimAutomation.Cloud  -MinimumVersion 13.0.0.0 -Scope Local -Force
         $CIServer = 'my.bizzcloud.be'
         $ConnectCiServer = Connect-CIServer -Server $CIServer -Org $OrgName -Credential $Credentials -ErrorAction SilentlyContinue
-
         If ( $Error ) {
-            $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.ProgressBar.Visibility = "Hidden" } )
-            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.ProgressBar.Value = 0 } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Connection Failure$(' '*4)$(' .'*90)$(' '*10)Please check OrgName - Username - Password" } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.IsEnabled = $True } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.Visibility = "Visible"  } )
@@ -213,7 +184,6 @@ Function Login {
             Catch { }
 		$SyncHash.Window.Dispatcher.invoke( [action]{
             $SyncHash.TextBlock.Text = "Please select the VDC Name `n`nPush the Continue Button"
-            $SyncHash.ProgressBar.Visibility = "Hidden" 
             $SyncHash.LabelStatus.Visibility = "Hidden"
             $SyncHash.LabelOrgName.Visibility = "Visible"
             $SyncHash.TextBoxOrgName.Visibility = "Visible"
@@ -264,8 +234,6 @@ Function SelectVDC {
         $CIServer = 'my.bizzcloud.be'
         $ConnectCiServer = Connect-CIServer -Server $CIServer -Org $OrgName -Credential $Credentials -ErrorAction SilentlyContinue
         If ( $Error ) {
-            $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.ProgressBar.Visibility = "Hidden" } )
-            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.ProgressBar.Value = 0 } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Connection Failure$(' '*4)$(' .'*90)$(' '*10)Please check OrgName - Username - Password" } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderSelectVDC.IsEnabled = $True } )
 			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderSelectVDC.Visibility = "Visible"  } )
@@ -282,7 +250,6 @@ Function SelectVDC {
             Catch { }
 		$SyncHash.Window.Dispatcher.invoke( [action]{
             $SyncHash.TextBlock.Text = "Please select the Org Net Name `nPlease select the Template Name `n`nEnter the VAPP Name `nEnter or leave the VM Name Prefix`n`nPush the Validate Button"
-            $SyncHash.ProgressBar.Visibility = "Hidden" 
             $SyncHash.LabelStatus.Visibility = "Hidden"
             $SyncHash.LabelOrgName.Visibility = "Visible"
             $SyncHash.TextBoxOrgName.Visibility = "Visible"
@@ -314,7 +281,6 @@ Function SelectVDC {
             $SyncHash.BorderSelectOrgNet.IsEnabled = $True
             $SyncHash.BorderSelectOrgNet.Visibility = "Visible"
             } )
-
         }
 	$PSinstance = [powershell]::Create().AddScript($Code)
     $PSinstance.Runspace = $Runspace
@@ -350,8 +316,6 @@ Function Validate {
             }
         If ( -not $vAppName ) {
             $SyncHash.Window.Dispatcher.invoke( [action]{
-                $SyncHash.ProgressBar.Visibility = "Hidden"
-                $SyncHash.ProgressBar.Value = 0
 			    $SyncHash.LabelStatus.Content = "VAPP Name empty $(' '*4)$(' .'*110)$(' '*10)Please Enter VAPP NAme"
                 $SyncHash.BorderSelectOrgNet.IsEnabled = $True
                 $SyncHash.BorderSelectOrgNet.Visibility = "Visible"
@@ -362,8 +326,6 @@ Function Validate {
         $CIVapp = Get-CIVapp -Name "$vAppName" -ErrorAction SilentlyContinue
         If ( $CIVapp ) {
             $SyncHash.Window.Dispatcher.invoke( [action]{
-                $SyncHash.ProgressBar.Visibility = "Hidden"
-                $SyncHash.ProgressBar.Value = 0
 			    $SyncHash.LabelStatus.Content = "VAPP already exists$(' '*4)$(' .'*110)$(' '*10)Please check BizzCloud"
                 $SyncHash.BorderSelectOrgNet.IsEnabled = $True
                 $SyncHash.BorderSelectOrgNet.Visibility = "Visible"
@@ -377,16 +339,13 @@ Function Validate {
             Return
             }
         $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.TextBoxOutput.AddText("`n Org Name & vApp Name Validated`n Proceed`n") } )
-    
 		$SyncHash.Window.Dispatcher.invoke( [action]{
             $SyncHash.TextBlock.Text = "Please continue `n`nPush the Deploy Button"
-            $SyncHash.ProgressBar.Visibility = "Hidden" 
             $SyncHash.LabelStatus.Visibility = "Hidden"
             $SyncHash.LabelOrgName.Visibility = "Visible"
             $SyncHash.TextBoxOrgName.Visibility = "Visible"
             $SyncHash.TextBoxOrgName.IsReadOnly = $True
             $SyncHash.TextBoxOrgName.IsEnabled = $False
-
             $SyncHash.LabelUserName.Visibility = "Hidden"
             $SyncHash.TextBoxUserName.Visibility = "Hidden"
             $SyncHash.LabelPassword.Visibility = "Hidden"
@@ -415,7 +374,6 @@ Function Validate {
             $SyncHash.BorderDeploy.IsEnabled = $True
             $SyncHash.BorderDeploy.Visibility = "Visible"
             } )
-
         }
 	$PSinstance = [powershell]::Create().AddScript($Code)
     $PSinstance.Runspace = $Runspace
@@ -434,8 +392,8 @@ Function Deploy {
 	$Runspace.SessionStateProxy.SetVariable("WindowsTemplateName",$SyncHash.ComboBoxWindowsTemplate.SelectedValue )
 	$Runspace.SessionStateProxy.SetVariable("vAppName",$SyncHash.TextBoxVappName.Text )
 	$Runspace.SessionStateProxy.SetVariable("VmNamePrefix",$SyncHash.TextBoxVmNamePrefix.Text )
-
     [ScriptBlock]$Code = {
+        
         $Text = @"
 # Terraform Block
 terraform {
@@ -468,6 +426,11 @@ provider "vcd" {
   org = var.org_name
   vdc = var.vdc_name 
   url = "https://my.bizzcloud.be/api"
+}
+
+# Data Block
+data "vcd_org" "org" {
+  name = var.org_name
 }
 
 # Resource Blocks
@@ -604,24 +567,86 @@ resource "vcd_vapp_vm" "vm3" {
         Push-Location -Path 'Terraform'
         Remove-Item -Path "*" -Recurse -Force
         $Text | Out-File -FilePath 'main.tf' -Encoding ascii -Force
-        Start-Sleep -Seconds 2
+        # Check Terraform latest version for Windows
+        $Arguments = @{
+            Uri = "https://releases.hashicorp.com/terraform"
+            UseBasicParsing = $True
+            Method = 'get'
+            }
+        $Version = ( ( Invoke-WebRequest @Arguments ).Links.href |  Where-Object -FilterScript { $PSItem -notmatch 'alpha' } )[1].Split( '/' )[-2]
+        # Dowload Terraform latest version for Windows
+        $Arguments = @{
+            Uri = "https://releases.hashicorp.com/terraform/$Version"
+            UseBasicParsing = $True
+            Method = 'get'
+            }
+        $UrlDownload = ( Invoke-WebRequest @Arguments ).Links.href |  Where-Object -FilterScript { $PSItem -match 'windows_amd64' } 
+        $FileDownload = "$ENV:LOCALAPPDATA\Terraform\terraform.zip"
+        $FolderDownload = "$ENV:LOCALAPPDATA\Terraform"
 		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " `n" ) } )
+		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Start Terraform Download `n" ) } )
+		$Error.Clear()
+        ( New-Object System.Net.WebClient ).DownLoadFile( "$UrlDownload" , "$FileDownload" )
+        If ( $Error ) {
+		    $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Terraform Download Failure$(' '*4)$(' .'*90)$(' '*10)Please check Internet" } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.IsEnabled = $True } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.Visibility = "Visible"  } )
+            Return
+            }
+        # Unzip FileDownload to FolderDownload
+        Expand-Archive -Path $FileDownload -DestinationPath $FolderDownload -Force
+		If ( Test-Path -Path "$ENV:LOCALAPPDATA\Terraform\terraform.exe" ) {
+			$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Terraform Version $Version has been successfully installed `n" ) } )
+			}
+			Else {
+		    	$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Terraform Installation Failure$(' '*4)$(' .'*90)$(' '*10)Please check Internet" } )
+				$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.IsEnabled = $True } )
+				$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.Visibility = "Visible"  } )
+            	Return
+            	}
 		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Start Terraform Init `n" ) } )
-        [STRING]$Terraform = terraform.exe init -compact-warnings -no-color
-        If ( $Terraform.ToLower().Contains( 'terraform has been successfully initialized!' ) ) {
+        $Error.Clear()
+        [STRING]$Terraform = ./terraform.exe init -compact-warnings -no-color
+        If ( $Error ) {
+		    $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Terraform Init Failure$(' '*4)$(' .'*90)$(' '*10)Please check Internet" } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.IsEnabled = $True } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.Visibility = "Visible"  } )
+            Return
+            }
+        If ( $Terraform.ToLower().Contains( 'Terraform has been successfully initialized' ) ) {
             $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Terraform has been successfully initialized! `n" ) } )
             }
 		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Start Terraform Validate `n" ) } )
-        [STRING]$Terraform = terraform.exe validate -no-color
-        If ( $Terraform.ToLower().Contains( 'success' ) ) {
-            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Terraform has been successfully validated! `n" ) } )
+        $Error.Clear()
+        [STRING]$Terraform = ./terraform.exe validate -no-color
+        If ( $Error ) {
+		    $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Terraform Validation Failure$(' '*4)$(' .'*90)$(' '*10)Please check main.tf" } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.IsEnabled = $True } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.Visibility = "Visible"  } )
+            Return
             }
+        If ( $Terraform.ToLower().Contains( 'success' ) ) {
+            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Terraform has been successfully validated `n" ) } )
+            }
+		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Start Terraform Refresh `n" ) } )
+        $Error.Clear()
+        [STRING]$Terraform = ./terraform.exe refresh -var "user_password=$Password" -no-color
+        If ( $Error ) {
+		    $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Terraform Refresh Failure$(' '*4)$(' .'*90)$(' '*10)Please check BizzCloud ( Password )" } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.IsEnabled = $True } )
+			$SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderDeploy.Visibility = "Visible"  } )
+            Return
+            }
+        If ( $Terraform.ToLower().Contains( 'success' ) ) {
+            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Terraform has been successfully Refreshed `n" ) } )
+            }
+
 		$SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Start Terraform Apply `n" ) } )
         $Error.Clear()
         # [STRING]$Terraform = Invoke-Expression -Command "terraform.exe apply -var 'user_password=$Password' -auto-approve -compact-warnings -no-color" -ErrorAction SilentlyContinue
-        [STRING]$Terraform = terraform.exe apply -var "user_password=$Password" -auto-approve -compact-warnings -no-color
+        [STRING]$Terraform = ./terraform.exe apply -var "user_password=$Password" -auto-approve -compact-warnings -no-color
         If ( $Terraform.ToLower().Contains('apply complete!') ) {
-            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Terraform has been successfully applied! `n" ) }  )
+            $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText( " Terraform has been successfully applied `n" ) }  )
             }
         If ( $Error ) {
             [STRING]$ErrorMsg = $Error[-2]
@@ -651,31 +676,13 @@ resource "vcd_vapp_vm" "vm3" {
     $PSinstance.Runspace = $Runspace
 	$PSinstance.BeginInvoke()
     }
-Function Progress {
-    Param($SyncHash)
-    $Runspace = [runspacefactory]::CreateRunspace()
-	$Runspace.Open()
-	$Runspace.SessionStateProxy.SetVariable("SyncHash", $SyncHash )
-    $Code = {
-        $I = 1
-        $Step = 3
-        While ( $True) {
-            $I += $Step
-            If ( $I -ge 100 ) { $I = 1 }
-            $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.ProgressBar.Value = $I } )
-            Start-Sleep -Milliseconds 1500
-            }
-        }
-    $PSinstance = [powershell]::Create().AddScript($Code)
-    $PSinstance.Runspace = $Runspace
-	$PSinstance.BeginInvoke()
-    }
+
+# Init ( WPF - Windows Presentation Framework ) Actions
 $SyncHash.ButtonLogin.Add_Click({
     $SyncHash.TextBoxOutput.Clear()
     $SyncHash.BorderLogin.IsEnabled = $False
     $SyncHash.LabelStatus.Content = "In Progress ...."
     $SyncHash.LabelStatus.Visibility = "Visible"
-    $SyncHash.ProgressBar.Visibility = "Visible"
     Login -SyncHash $SyncHash
     })
 $SyncHash.ButtonSelectVDC.Add_Click({
@@ -683,7 +690,6 @@ $SyncHash.ButtonSelectVDC.Add_Click({
     $SyncHash.BorderSelectVDC.IsEnabled = $False
     $SyncHash.LabelStatus.Content = "In Progress ...."
     $SyncHash.LabelStatus.Visibility = "Visible"
-    $SyncHash.ProgressBar.Visibility = "Visible"
     SelectVDC -SyncHash $SyncHash
     })
 $SyncHash.ButtonSelectOrgNet.Add_Click({
@@ -691,7 +697,6 @@ $SyncHash.ButtonSelectOrgNet.Add_Click({
     $SyncHash.BorderSelectOrgNet.IsEnabled = $False
     $SyncHash.LabelStatus.Content = "In Progress ...."
     $SyncHash.LabelStatus.Visibility = "Visible"
-    $SyncHash.ProgressBar.Visibility = "Visible"
     Validate -SyncHash $SyncHash
     })
 $SyncHash.ButtonDeploy.Add_Click({
@@ -700,7 +705,6 @@ $SyncHash.ButtonDeploy.Add_Click({
     $SyncHash.BorderDeploy.IsEnabled = $False
     $SyncHash.LabelStatus.Content = "In Progress ...."
     $SyncHash.LabelStatus.Visibility = "Visible"
-    $SyncHash.ProgressBar.Visibility = "Visible"
     Deploy -SyncHash $SyncHash
     })
 
@@ -709,4 +713,3 @@ $SyncHash.Window.ShowDialog()
 
 # End ( WPF - Windows Presentation Framework ) Process on Exit
 $SyncHash.Window.Add_Closing( { [System.Windows.Forms.Application]::Exit() ; Stop-Process $PID } )
-
