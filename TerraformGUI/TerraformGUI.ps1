@@ -107,7 +107,7 @@ $SyncHash.Host = $Host
 $SyncHash.Window=[Windows.Markup.XamlReader]::Load( [System.Xml.XmlNodeReader]::new($XAML) )
 
 # AutoFind ( WPF - Windows Presentation Framework ) Name - Add Name to Synchronized HashTable
-$XAML.SelectNodes("//*[@Name]") | ForEach-Object { $SyncHash.Add($_.Name, $SyncHash.Window.Findname($PsItem.Name)) }
+$XAML.SelectNodes("//*[@Name]") | ForEach-Object { $SyncHash.Add($PsItem.Name, $SyncHash.Window.Findname($PsItem.Name)) }
 
 # Init welcome messages
 $SyncHash.TextBoxOutput.Text = "`n Dear $env:UserName,`n Thank you for choosing the Terraform GUI created by ClearMedia NV."
