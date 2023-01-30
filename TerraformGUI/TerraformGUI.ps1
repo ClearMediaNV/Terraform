@@ -136,7 +136,7 @@ Function Login {
             Else {
 		        $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install VCloud Module`n") } )
                 $Error.Clear()
-                Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force
+                Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force -AllowClobber
                 If ( $Error ) {
 			        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Error Installing PowerShell Module VCloud." } )
 			        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.IsEnabled = $True } )
