@@ -124,11 +124,11 @@ Function Login {
 	$Runspace.SessionStateProxy.SetVariable("Password",$SyncHash.PasswordBoxPassword.SecurePassword )
     [ScriptBlock]$Code = {
         # Deploy VmWare VCloud Module
-        Try { Get-PackageProvider -Name 'NuGet'  -ListAvailable }
+        Try { Get-PackageProvider -Name 'NuGet' -ListAvailable -ErrorAction Stop}
             Catch {
                 # Install Extra PackageProvider - Module
 		        $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install NuGet `n") } )
-                Install-PackageProvider -Name 'NuGet' -Force
+                Install-PackageProvider -Name 'NuGet' -Scope CurrentUser -Force
                 }
         If ( ( Get-Module -Name VMware.VimAutomation.Cloud -ListAvailable ).Version.Major -ge 13 ) {
             $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" VCloud Module allready Installed `n") } )
@@ -136,7 +136,7 @@ Function Login {
             Else {
 		        $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install VCloud Module`n") } )
                 $Error.Clear()
-                Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force -AllowClobber
+                Install-Module -Name VMware.VimAutomation.Cloud -MinimumVersion 13.0.0.0 -Scope CurrentUser -Force
                 If ( $Error ) {
 			        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.LabelStatus.Content = "Error Installing PowerShell Module VCloud." } )
 			        $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.BorderLogin.IsEnabled = $True } )
