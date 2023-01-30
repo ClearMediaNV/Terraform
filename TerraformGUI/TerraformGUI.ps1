@@ -124,7 +124,7 @@ Function Login {
 	$Runspace.SessionStateProxy.SetVariable("Password",$SyncHash.PasswordBoxPassword.SecurePassword )
     [ScriptBlock]$Code = {
         # Deploy VmWare VCloud Module
-        Try { Get-PackageProvider -Name 'NuGet' }
+        Try { Get-PackageProvider -Name 'NuGet'  -ListAvailable }
             Catch {
                 # Install Extra PackageProvider - Module
 		        $SyncHash.Window.Dispatcher.invoke( { $SyncHash.TextBoxOutput.AddText(" Install NuGet `n") } )
