@@ -117,6 +117,8 @@ $SyncHash.TextBlock.Text = "Please Login in BizzCloud`nEnter Org Name and Creden
 Function Login {
     Param($SyncHash)
 	$Runspace = [runspacefactory]::CreateRunspace()
+	$Runspace.ApartmentState = 'STA'
+	$Runspace.ThreadOptions = 'ReuseThread'
 	$Runspace.Open()
 	$Runspace.SessionStateProxy.SetVariable("SyncHash", $SyncHash )
 	$Runspace.SessionStateProxy.SetVariable("OrgName", $SyncHash.TextBoxOrgName.Text )
