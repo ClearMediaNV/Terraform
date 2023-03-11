@@ -7,7 +7,7 @@ $SyncHash.Host = $Host
 
 # Init  ( WPF - Windows Presentation Framework ) XAML Config
 $XAML = [XML]@'
-    <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Title="Terraform GUI v1.0" Width="1000" Height="700" WindowStartupLocation ="CenterScreen" VerticalAlignment="Top" ShowInTaskbar = "True" >
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Title="Terraform GUI v1.0" Width="1000" Height="700" WindowStartupLocation ="CenterScreen" VerticalAlignment="Top" ShowInTaskbar = "True" >
     <Grid Background="#FFE5E5E5">
         <Label Name="LabelOrgName" Content="Org Name" Margin="20,30,0,0" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible" />
         <Label Name="LabelUserName" Content="User Name" Margin="20,60,0,0" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Visible" />
