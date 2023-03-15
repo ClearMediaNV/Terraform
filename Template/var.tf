@@ -38,6 +38,10 @@ variable "vm3_name" {
 	type = string
 	default = "FireboxV"
 	}
+variable "template_catalog_name" {
+	type = string
+	default = "Public_Catalog"
+	}
 variable "template_windows_name" {
 	type = string
 	default = "Win2022Template"
