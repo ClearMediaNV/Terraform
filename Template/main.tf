@@ -3,33 +3,34 @@ terraform {
   required_providers {
     vcd = {
       source = "vmware/vcd"
+      version = "3.10.0"
     }
   }
 }
 
 # Provider Block
 provider "vcd" {
-  user = var.user_name
-  password = var.user_password
+  user = local.user_name
+  password = local.user_password
   auth_type = "integrated"
-  org = var.org_name
-  vdc = var.vdc_name 
+  org = local.org_name
+  vdc = local.vdc_name 
   url = "https://my.bizzcloud.be/api"
 }
 
 # Data Block
 data "vcd_org" "org" {
-  name = var.org_name
+  name = local.org_name
 }
 
 # Resource Blocks
 resource "vcd_vapp" "vapp" {
-  name = var.vapp_name
+  name = local.vapp_name
 }
 
 resource "vcd_vapp_network" "vapp_net" {
   vapp_name = vcd_vapp.vapp.name
-  name  = var.vapp_network_name
+  name  = local.vapp_network_name
   gateway = "192.168.13.1"
   netmask = "255.255.255.0"
   dns1 = "195.238.2.21"
@@ -42,18 +43,18 @@ resource "vcd_vapp_network" "vapp_net" {
 
 resource "vcd_vapp_org_network" "vapp_org_net" {
   vapp_name = vcd_vapp.vapp.name
-  org_network_name  = var.vdc_network_name
+  org_network_name  = local.vdc_network_name
 }
 
 resource "vcd_vapp_vm" "vm1" {
   vapp_name = vcd_vapp.vapp.name
-  name = var.vm1_name
-  computer_name = var.vm1_name
+  name = local.vm1_name
+  computer_name = local.vm1_name
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
-  catalog_name = var.template_catalog_name
-  template_name = var.template_windows_name
+  catalog_name = local.template_catalog_name
+  template_name = local.template_windows_name
   memory = 4096
   cpus = 1
   cpu_cores = 1
@@ -69,13 +70,13 @@ resource "vcd_vapp_vm" "vm1" {
 
 resource "vcd_vapp_vm" "vm2" {
   vapp_name = vcd_vapp.vapp.name
-  name = var.vm2_name
-  computer_name = var.vm2_name
+  name = local.vm2_name
+  computer_name = local.vm2_name
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
-  catalog_name  = var.template_catalog_name
-  template_name = var.template_windows_name
+  catalog_name  = local.template_catalog_name
+  template_name = local.template_windows_name
   memory = 6144
   cpus = 2
   cpu_cores = 1
@@ -110,13 +111,13 @@ resource "vcd_vm_internal_disk" "vm2_disk2" {
 
 resource "vcd_vapp_vm" "vm3" {
   vapp_name = vcd_vapp.vapp.name
-  name = var.vm3_name
-  computer_name = var.vm3_name
+  name = local.vm3_name
+  computer_name = local.vm3_name
   power_on = false
   cpu_hot_add_enabled = true
   memory_hot_add_enabled = true
-  catalog_name = var.template_catalog_name
-  template_name = var.template_watchguard_name
+  catalog_name = local.template_catalog_name
+  template_name = local.template_watchguard_name
   memory = 1024
   cpus = 1
   cpu_cores = 1
