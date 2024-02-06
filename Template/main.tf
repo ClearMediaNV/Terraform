@@ -122,7 +122,7 @@ resource "vcd_vapp_vm" "vm3" {
   cpus = 1
   cpu_cores = 1
   network {
-    name = var.vdc_network_name
+    name = local.vdc_network_name
     type = "org"
     ip_allocation_mode = "POOL"
     adapter_type = "VMXNET3"
