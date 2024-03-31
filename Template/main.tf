@@ -28,7 +28,7 @@ resource "vcd_vapp" "vapp" {
   name = local.vapp_name
 }
 
-resource "vcd_vapp_network" "vapp_net" {
+resource "vcd_vapp_network" "vapp_network" {
   vapp_name = vcd_vapp.vapp.name
   name  = local.vapp_network_name
   gateway = "192.168.13.1"
@@ -41,7 +41,7 @@ resource "vcd_vapp_network" "vapp_net" {
   }
 }
 
-resource "vcd_vapp_org_network" "vapp_org_net" {
+resource "vcd_vapp_org_network" "vapp_org_network" {
   vapp_name = vcd_vapp.vapp.name
   org_network_name  = local.vdc_network_name
 }
@@ -59,7 +59,7 @@ resource "vcd_vapp_vm" "vm1" {
   cpus = 1
   cpu_cores = 1
   network {
-    name = vcd_vapp_network.vapp_net.name
+    name = vcd_vapp_network.vapp_network.name
     type = "vapp"
     ip_allocation_mode = "MANUAL"
     ip = "192.168.13.100"
@@ -81,7 +81,7 @@ resource "vcd_vapp_vm" "vm2" {
   cpus = 2
   cpu_cores = 1
   network {
-    name = vcd_vapp_network.vapp_net.name
+    name = vcd_vapp_network.vapp_network.name
     type = "vapp"
     ip_allocation_mode = "MANUAL"
     ip = "192.168.13.101"
@@ -129,7 +129,7 @@ resource "vcd_vapp_vm" "vm3" {
     is_primary = true
   }
   network {
-    name = vcd_vapp_network.vapp_net.name
+    name = vcd_vapp_network.vapp_network.name
     type = "vapp"
     ip_allocation_mode = "MANUAL"
     ip = "192.168.13.254"
