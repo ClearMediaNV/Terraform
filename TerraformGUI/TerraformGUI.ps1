@@ -124,7 +124,7 @@ Function Login {
 	$Runspace.SessionStateProxy.SetVariable("OrgName", $SyncHash.TextBoxOrgName.Text )
 	$Runspace.SessionStateProxy.SetVariable("UserName",$SyncHash.TextBoxUserName.Text )
 	$Runspace.SessionStateProxy.SetVariable("Password",$SyncHash.PasswordBoxPassword.SecurePassword )
-    [ScriptBlock]$Code = {
+    $Code = {
         # Deploy VmWare VCloud Module
         Try { Get-PackageProvider -Name 'NuGet' -ListAvailable -ErrorAction Stop}
             Catch {
@@ -228,7 +228,7 @@ Function SelectVDC {
 	$Runspace.SessionStateProxy.SetVariable("WindowsTemplateName",$SyncHash.ComboBoxWindowsTemplate.SelectedValue )
 	$Runspace.SessionStateProxy.SetVariable("vAppName",$SyncHash.TextBoxVappName.Text )
 	$Runspace.SessionStateProxy.SetVariable("VmNamePrefix",$SyncHash.TextBoxVmNamePrefix.Text )
-    [ScriptBlock]$Code = {
+    $Code = {
         # Connect BizzCloud
         $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.TextBoxOutput.AddText("`n Connect to BizzCloud`n") } )
         Import-Module -Name VMware.VimAutomation.Cloud  -MinimumVersion 13.0.0.0 -Scope Local -Force
@@ -301,7 +301,7 @@ Function Validate {
 	$Runspace.SessionStateProxy.SetVariable("WindowsTemplateName",$SyncHash.ComboBoxWindowsTemplate.SelectedValue )
 	$Runspace.SessionStateProxy.SetVariable("vAppName",$SyncHash.TextBoxVappName.Text )
 	$Runspace.SessionStateProxy.SetVariable("VmNamePrefix",$SyncHash.TextBoxVmNamePrefix.Text )
-    [ScriptBlock]$Code = {
+    $Code = {
         # Connect BizzCloud
         $SyncHash.Window.Dispatcher.invoke( [action]{ $SyncHash.TextBoxOutput.AddText("`n Connect to BizzCloud`n") } )
         Import-Module -Name VMware.VimAutomation.Cloud  -MinimumVersion 13.0.0.0 -Scope Local -Force
@@ -394,7 +394,7 @@ Function Deploy {
 	$Runspace.SessionStateProxy.SetVariable("WindowsTemplateName",$SyncHash.ComboBoxWindowsTemplate.SelectedValue )
 	$Runspace.SessionStateProxy.SetVariable("vAppName",$SyncHash.TextBoxVappName.Text )
 	$Runspace.SessionStateProxy.SetVariable("VmNamePrefix",$SyncHash.TextBoxVmNamePrefix.Text )
-    [ScriptBlock]$Code = {
+    $Code = {
         
         $Text = @"
 # Terraform Block
