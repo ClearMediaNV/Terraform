@@ -23,7 +23,7 @@ data "vcd_org" "org" {
   name = local.org_name
 }
 
-# Resource Blocks
+# Resource BlockList
 resource "vcd_vapp" "vapp" {
   name = local.vapp_name
 }
