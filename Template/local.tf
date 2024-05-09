@@ -1,3 +1,4 @@
+# Please Note Values Case Sensitive
 locals {
 	org_name = "Cleartoso"
 	user_name = "terraform"
