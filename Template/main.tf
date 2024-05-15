@@ -23,7 +23,7 @@ data "vcd_org" "org" {
   name = local.org_name
 }
 
-# Resource Blocks
+# Resource BlockList
 resource "vcd_vapp" "vapp" {
   name = local.vapp_name
 }
@@ -79,7 +79,7 @@ resource "vcd_vapp_vm" "vm2" {
   template_name = local.template_windows_name
   memory = 6144
   cpus = 2
-  cpu_cores = 1
+  cpu_cores = 2
   network {
     name = vcd_vapp_network.vapp_network.name
     type = "vapp"
