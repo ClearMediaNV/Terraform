@@ -4,11 +4,11 @@ variable "org_name" {
 	}
 variable "user_name" {
 	type = string
-	default = ""
+	default = "YourUserName"
 	}
 variable "user_password" {
 	type = string
-	default = ""
+	default = "YourUserPassword"
 	sensitive = true
 	}
 variable "vdc_name" {
