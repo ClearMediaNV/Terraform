@@ -4,11 +4,11 @@ variable "org_name" {
 	}
 variable "user_name" {
 	type = string
-	default = "terraform"
+	default = ""
 	}
 variable "user_password" {
 	type = string
-	default = "????????????????????????"
+	default = ""
 	sensitive = true
 	}
 variable "vdc_name" {
