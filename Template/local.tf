@@ -1,8 +1,8 @@
 # Please Note Values Case Sensitive
 locals {
 	org_name = "Cleartoso"
-	user_name = "terraform"
-	user_password = "????????????????????????"
+	user_name = ""
+	user_password = ""
 	vdc_name = "vDC-Cleartoso-Machelen"
 	vdc_network_name = "orgnet-Direct-Cleartoso"
 	vapp_name = "vApp-xyz"
