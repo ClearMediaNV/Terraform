@@ -1,12 +1,12 @@
-# Please Note Values Case Sensitive
+# Please Note Values are Case Sensitive
 locals {
-	org_name = "Cleartoso"
-	user_name = "YourUserNama"
-	user_password = "YourUserPassword"
-	vdc_name = "vDC-Cleartoso-Machelen"
-	vdc_network_name = "orgnet-Direct-Cleartoso"
-	vapp_name = "vApp-xyz"
-	vapp_network_name = "vAppNet-xyz"
+	org_name = "OrgName"
+	user_name = "UserName"
+	user_password = "UserPassword"
+	vdc_name = "vDC-OrgName-Machelen"
+	vdc_network_name = "orgnet-Direct-OrgName"
+	vapp_name = "vApp-Demo"
+	vapp_network_name = "vAppNet-Demo"
 	vm1_name = "DC"
 	vm2_name = "RDS"
 	vm3_name = "FireboxV"
