@@ -1,31 +1,31 @@
 variable "org_name" {
 	type = string
-	default = "Cleartoso"
+	default = "OrgName"
 	}
 variable "user_name" {
 	type = string
-	default = "YourUserName"
+	default = "UserName"
 	}
 variable "user_password" {
 	type = string
-	default = "YourUserPassword"
+	default = "UserPassword"
 	sensitive = true
 	}
 variable "vdc_name" {
 	type = string
-	default = "vDC-Cleartoso-Machelen"
+	default = "vDC-OrgName-Machelen"
 	}
 variable "vdc_network_name" {
 	type = string
-	default = "orgnet-Direct-Cleartoso"
+	default = "orgnet-Direct-OrgName"
 	}
 variable "vapp_name" {
 	type = string
-	default = "vApp-xyz"
+	default = "vApp-Demo"
 	}
 variable "vapp_network_name" {
 	type = string
-	default = "vAppNet-xyz"
+	default = "vAppNet-Demo"
 	}
 variable "vm1_name" {
 	type = string
