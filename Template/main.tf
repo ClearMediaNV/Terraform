@@ -118,7 +118,7 @@ resource "vcd_vapp_vm" "vm3" {
   memory_hot_add_enabled = true
   catalog_name = local.template_catalog_name
   template_name = local.template_watchguard_name
-  memory = 1024
+  memory = 2048
   cpus = 1
   cpu_cores = 1
   network {
