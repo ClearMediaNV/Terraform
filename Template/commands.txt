@@ -1,10 +1,7 @@
-# Get Terraform Verion
-terraform version
 # Download and Install Provider PlugIn
 terraform init
-# Update State
-terraform refresh
 # Plan
 terraform plan
 # Apply Plan - type yes to confirm
 terraform apply
+#
