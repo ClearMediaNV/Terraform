@@ -34,7 +34,7 @@ resource "vcd_vapp_network" "vapp_network" {
   gateway = "192.168.13.1"
   netmask = "255.255.255.0"
   dns1 = "195.238.2.21"
-  dns2 = "8.8.8.8"
+  dns2 = "1.1.1.1"
   static_ip_pool {
     start_address = "192.168.13.100"
     end_address = "192.168.13.199"
