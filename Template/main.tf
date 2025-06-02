@@ -56,8 +56,8 @@ resource "vcd_vapp_vm" "vm1" {
   catalog_name = local.template_catalog_name
   template_name = local.template_windows_name
   memory = 4096
-  cpus = 1
-  cpu_cores = 1
+  cpus = 2
+  cpu_cores = 2
   network {
     name = vcd_vapp_network.vapp_network.name
     type = "vapp"
