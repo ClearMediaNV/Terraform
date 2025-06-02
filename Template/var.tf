@@ -1,3 +1,4 @@
+# Please Note default Values are Case Sensitive
 variable "org_name" {
 	type = string
 	default = "OrgName"
