@@ -3,5 +3,5 @@
 [System.Net.ServicePointManager]::SecurityProtocol = 'Tls12'
 Invoke-Expression ( New-Object System.Net.WebClient ).DownloadString( 'https://chocolatey.org/install.ps1' )
 # Install Terraform Latest Version
-Invoke-Expression -Command '& C:\ProgramData\chocolatey\choco install terraform -y -f'
+Invoke-Expression -Command 'C:\ProgramData\chocolatey\choco install terraform -y -f'
 # 
