@@ -114,8 +114,8 @@ resource "vcd_vapp_vm" "vm3" {
   name = local.vm3_name
   computer_name = local.vm3_name
   power_on = false
-  cpu_hot_add_enabled = true
-  memory_hot_add_enabled = true
+  cpu_hot_add_enabled = false
+  memory_hot_add_enabled = false
   catalog_name = local.template_catalog_name
   template_name = local.template_watchguard_name
   memory = 2048
