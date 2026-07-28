@@ -4,9 +4,9 @@ terraform {
     vcd = {
       source = "vmware/vcd"
       version = "3.10.0"
+      }
     }
   }
-}
 
 # Provider Block
 provider "vcd" {
@@ -16,17 +16,17 @@ provider "vcd" {
   org = local.org_name
   vdc = local.vdc_name 
   url = "https://my.bizzcloud.be/api"
-}
+  }
 
 # Data Block
 data "vcd_org" "org" {
   name = local.org_name
-}
+  }
 
 # Resource Block List
 resource "vcd_vapp" "vapp" {
   name = local.vapp_name
-}
+  }
 
 resource "vcd_vapp_network" "vapp_network" {
   vapp_name = vcd_vapp.vapp.name
@@ -38,13 +38,13 @@ resource "vcd_vapp_network" "vapp_network" {
   static_ip_pool {
     start_address = "192.168.13.100"
     end_address = "192.168.13.199"
+    }
   }
-}
 
 resource "vcd_vapp_org_network" "vapp_org_network" {
   vapp_name = vcd_vapp.vapp.name
   org_network_name  = local.vdc_network_name
-}
+  }
 
 resource "vcd_vapp_vm" "vm1" {
   vapp_name = vcd_vapp.vapp.name
@@ -65,8 +65,8 @@ resource "vcd_vapp_vm" "vm1" {
     ip = "192.168.13.100"
     adapter_type = "VMXNET3"
     is_primary = true
+    }
   }
-}
 
 resource "vcd_vapp_vm" "vm2" {
   vapp_name = vcd_vapp.vapp.name
@@ -79,7 +79,7 @@ resource "vcd_vapp_vm" "vm2" {
   template_name = local.template_windows_name
   memory = 6144
   cpus = 2
-  cpu_cores = 1
+  cpu_cores = 2
   network {
     name = vcd_vapp_network.vapp_network.name
     type = "vapp"
@@ -87,8 +87,24 @@ resource "vcd_vapp_vm" "vm2" {
     ip = "192.168.13.101"
     adapter_type = "VMXNET3"
     is_primary = true
+    }
+  override_template_disk {
+    bus_type = "paravirtual"
+    size_in_mb = "102400"
+    bus_number = 0
+    unit_number = 0
+    }
+  customization {
+    enabled = true
+    initscript = <<-EOF
+      (
+      ECHO RESCAN
+      ECHO SELECT VOLUME=C
+      ECHO EXTEND
+      ) | DISKPART.EXE
+    EOF
+    }
   }
-}
 
 resource "vcd_vm_internal_disk" "vm2_disk1" {
   vapp_name = vcd_vapp.vapp.name
@@ -97,7 +113,7 @@ resource "vcd_vm_internal_disk" "vm2_disk1" {
   size_in_mb = "5120"
   bus_number = 0
   unit_number = 1
-}
+  }
 
 resource "vcd_vm_internal_disk" "vm2_disk2" {
   vapp_name = vcd_vapp.vapp.name
@@ -107,7 +123,7 @@ resource "vcd_vm_internal_disk" "vm2_disk2" {
   bus_number = 0
   unit_number = 2
   depends_on = [ vcd_vm_internal_disk.vm2_disk1 ]
-}
+  }
 
 resource "vcd_vapp_vm" "vm3" {
   vapp_name = vcd_vapp.vapp.name
@@ -118,7 +134,7 @@ resource "vcd_vapp_vm" "vm3" {
   memory_hot_add_enabled = false
   catalog_name = local.template_catalog_name
   template_name = local.template_watchguard_name
-  memory = 2048
+  memory = 1024
   cpus = 1
   cpu_cores = 1
   network {
@@ -127,7 +143,7 @@ resource "vcd_vapp_vm" "vm3" {
     ip_allocation_mode = "POOL"
     adapter_type = "VMXNET3"
     is_primary = true
-  }
+    }
   network {
     name = vcd_vapp_network.vapp_network.name
     type = "vapp"
@@ -135,23 +151,23 @@ resource "vcd_vapp_vm" "vm3" {
     ip = "192.168.13.254"
     adapter_type = "VMXNET3"
     is_primary = false
-  }
+    }
  network {
     type = "none"
 	ip_allocation_mode = "NONE"
 	adapter_type = "VMXNET3"
 	is_primary = false
-  }
+    }
   network {
     type = "none"
 	ip_allocation_mode = "NONE"
 	adapter_type = "VMXNET3"
 	is_primary = false
-  }
+    }
   network {
     type = "none"
 	ip_allocation_mode = "NONE"
 	adapter_type = "VMXNET3"
 	is_primary = false
-  }  
-}
+    }  
+  }
